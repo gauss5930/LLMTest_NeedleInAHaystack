@@ -67,6 +67,7 @@ class HuggingFace(ModelProvider):
         self.model = HuggingFacePipeline.from_model_id(
             model_id=model_name,
             device=0,
+            #device_map="auto", # uses accelerate to manage device mapping --> needs testing
             task="text-generation",
             pipeline_kwargs=model_kwargs
         )
@@ -89,7 +90,7 @@ class HuggingFace(ModelProvider):
         chain = LLMChain(llm=self.model, prompt=prompt)
 
         response = await chain.ainvoke(input={})
-        return response
+        return response['text'] # return's just the response
     
     def generate_prompt(self, context: str, retrieval_question: str) -> str | list[dict[str, str]]:
         """
